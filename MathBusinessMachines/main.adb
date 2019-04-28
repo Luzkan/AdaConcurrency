@@ -38,6 +38,7 @@ procedure main is
       entry JobsDone (jobsDone : in Integer);
       entry Behavior (patient : in Boolean);
       entry AlertDone (alert: in Boolean);
+      entry PrintStats;
    end Worker;
 
    task type Customer is
@@ -163,7 +164,7 @@ procedure main is
    task body Worker is
       Identifier: Integer;
       Patience: Boolean;
-      FinishedJob: Integer;
+      FinishedTasks: Integer := 0;
 
       CurrentTodoPointer: TodoPointer;
       Product: Integer;
@@ -183,7 +184,7 @@ procedure main is
          Identifier := workerID;
       end Id;
       accept JobsDone (jobsDone: in Integer) do
-         FinishedJob := jobsDone;
+         FinishedTasks := jobsDone;
       end JobsDone;
       accept Behavior (patient: in Boolean) do
          Patience := patient;
@@ -191,8 +192,16 @@ procedure main is
       workLoop:
       loop
          PopT(St, TaskFromBoss);
-
---           Put_Line("Worker " & Integer'Image(Identifier) & " patience: " & Boolean'Image(Patience) & ". So far made: ");
+         
+         -- Stats of workers in the company are going to be printed when they will have spare time between doing tasks
+         --       in other words, it can take a bit of time due to Worker being busy with doing Todo
+         select
+            accept PrintStats do
+               Put_Line("Worker " & Integer'Image(Identifier) & " patience: " & Boolean'Image(Patience) & ". So far made: " & Integer'Image(FinishedTasks));
+            end PrintStats;
+         else
+            null;
+         end select;
 
          case TaskFromBoss.action is
             when '+' =>
@@ -276,6 +285,7 @@ procedure main is
          end case;
 
          PushP(Sp, Product);
+         FinishedTasks := FinishedTasks + 1;
 
          if not Config.Silent then
             Put_Line("[Work] Worker [" & Integer'Image(Identifier) & " ] created product: " & Integer'Image(Product) & "");
@@ -328,7 +338,6 @@ begin
    for I in WorkNum'Range loop
       WorkNum(I).Id(I);
       WorkNum(I).JobsDone(0);
-
       if RandomBehavior.Random(RandBeh) = 1 then
          WorkNum(I).Behavior(False);
       else
@@ -351,8 +360,7 @@ begin
                PrintP(Sp);
             when 'w' =>
                for I in WorkNum'Range loop
---                    Put_Line("Worker " & Integer'Image(WorkNum(I).Id) & " patience: " & Boolean'Image(WorkNum(I).Behavior) & ". So far made: " & Integer'Image(WorkNum(I).JobsDone));
-                  null;
+                  WorkNum(I).PrintStats;
                end loop;
             when others =>
                Put_Line("You misspelled a command. Try again.");
