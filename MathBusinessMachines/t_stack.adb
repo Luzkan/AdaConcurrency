@@ -18,6 +18,28 @@ package body T_Stack is
       end if;
    end PopT;
 
+   -- Get the top item, or Task (0+0) if the stack is empty.
+   function TopT(S: Todo_Stack) return Todo is
+   begin
+      if S.Size > 0 then
+         return S.Data(S.Size);
+      else
+         return (0, '+', 0, 0);
+      end if;
+   end TopT;
+
+   -- Tell if the stack is empty.
+   function EmptyT(S: Todo_Stack) return Boolean is
+   begin
+      return S.Size = 0;
+   end EmptyT;
+
+   -- Tell if the stack is empty.
+   function FullT(S: Todo_Stack) return Boolean is
+   begin
+      return S.Size = Max_Size;
+   end FullT;
+
    -- Make the stack empty.
    procedure CleanT(S: in out Todo_Stack) is
    begin
@@ -38,27 +60,4 @@ package body T_Stack is
       end loop;
    end PrintT;
 
-   -- These below ended up unused but could be usefull in future
-   -- Get the top item, or Task (0+0) if the stack is empty.
-   function TopT(S: Todo_Stack) return Todo is
-   begin
-      if S.Size > 0 then
-         return S.Data(S.Size);
-      else
-         return (0, '+', 0);
-      end if;
-   end TopT;
-
-   -- Tell if the stack is empty.
-   function EmptyT(S: Todo_Stack) return Boolean is
-   begin
-      return S.Size = 0;
-   end EmptyT;
-
-   -- Tell if the stack is empty.
-   function FullT(S: Todo_Stack) return Boolean is
-   begin
-      return S.Size = Max_Size;
-   end FullT;
-   
 end T_Stack;
