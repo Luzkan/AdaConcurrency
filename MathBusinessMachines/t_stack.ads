@@ -6,17 +6,17 @@ package T_Stack is
    type Todo_Stack is private;
 
    Max_Size: constant Integer := 500;
-   type Actions is ('+', '-', '*');
+   type Actions is ('+', '*');
    type Todo is
-         record arg1: Integer; action: Actions; arg2: Integer; end record;
+         record arg1: Integer; action: Actions; arg2: Integer; answer: Integer; end record;
 
    procedure PushT(S: in out Todo_Stack; I: Todo);
    procedure PopT(S: in out Todo_Stack; I: out Todo);
-   procedure CleanT(S: in out Todo_Stack);
-   procedure PrintT(S: in out Todo_Stack);
    function TopT(S: Todo_Stack) return Todo;
    function EmptyT(S: Todo_Stack) return Boolean;
    function FullT(S: Todo_Stack) return Boolean;
+   procedure CleanT(S: in out Todo_Stack);
+   procedure PrintT(S: in out Todo_Stack);
 
    private
       type Stack_Data_Type is array(1..Max_Size) of Todo;
